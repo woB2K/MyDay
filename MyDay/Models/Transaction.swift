@@ -9,7 +9,10 @@ import SwiftData
 import Foundation
 
 @Model
-final class Transaction: Base {
+final class Transaction {
+    var uid: UUID = UUID()
+    var createTime: Date = Date()
+    var updateTime: Date = Date()
     var amount: Decimal = 0
     var currency: String = "RUB"
     var type: TransactionType = TransactionType.expense
@@ -17,7 +20,7 @@ final class Transaction: Base {
     var note: String? = nil
     var date: Date = Date()
     
-    override init() {}
+    init() {}
 }
 
 enum TransactionType: String, Codable {

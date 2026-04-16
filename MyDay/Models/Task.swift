@@ -9,7 +9,10 @@ import SwiftData
 import Foundation
 
 @Model
-final class Task: Base {
+final class Task {
+    var uid: UUID = UUID()
+    var createTime: Date = Date()
+    var updateTime: Date = Date()
     var title: String = ""
     var notes: String? = nil
     var isCompleted: Bool = false
@@ -21,7 +24,7 @@ final class Task: Base {
     var isRecurring: Bool = false
     var recurrenceRule: String? = nil
     
-    override init() {}
+    init() {}
 }
 
 enum TaskPriority: String, Codable, CaseIterable {

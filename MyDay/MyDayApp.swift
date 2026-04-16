@@ -27,6 +27,7 @@ struct MyDayApp: App {
 
     var body: some Scene {
         WindowGroup {
+            TodayView()
         }
         .modelContainer(sharedModelContainer)
     }
