@@ -10,24 +10,21 @@ import SwiftData
 
 @main
 struct MyDayApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Category.self,
-            Task.self,
-            Transaction.self
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
-
+    let sharedModelContainer: ModelContainer
+    let taskViewModel: TaskViewModel
+                                                                                                                                           
+    init() {
+        let schema = Schema([Category.self, Task.self, Transaction.self])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let container = try! ModelContainer(for: schema, configurations: [config])
+        self.sharedModelContainer = container
+        self.taskViewModel = TaskViewModel(context: container.mainContext)
+    }
+ 
     var body: some Scene {
         WindowGroup {
             TodayView()
+                .environment(taskViewModel)  // ← кладём в окружение
         }
         .modelContainer(sharedModelContainer)
     }

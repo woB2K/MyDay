@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyDay App — Design Concept</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0E0F14;
+    --surface: #16171F;
+    --surface2: #1E2029;
+    --surface3: #252733;
+    --border: rgba(255,255,255,0.07);
+    --text: #F0F1F5;
+    --text2: #9395A5;
+    --text3: #5A5C6E;
+    --accent: #6C8EFF;
+    --accent2: #A78BFA;
+    --green: #34D399;
+    --red: #F87171;
+    --orange: #FB923C;
+    --yellow: #FBBF24;
+    --pink: #F472B6;
+    --teal: #2DD4BF;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    font-weight: 400;
+    background: linear-gradient(135deg, #fff 0%, #9395A5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .header p {
+    color: var(--text3);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Screen nav */
+  .screen-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .screen-btn {
+    padding: 8px 18px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .screen-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .screen-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* Phone frame */
+  .phone-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: var(--surface);
+    border-radius: 52px;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 8px #0a0b0f,
+      0 0 0 9px rgba(255,255,255,0.05),
+      0 60px 120px rgba(0,0,0,0.8),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .status-bar .time { font-weight: 600; }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+  .status-icons svg { width: 16px; height: 16px; fill: var(--text); }
+
+  /* Dynamic island */
+  .dynamic-island {
+    width: 120px;
+    height: 34px;
+    background: #000;
+    border-radius: 20px;
+    margin: 8px auto 0;
+  }
+
+  /* Screens */
+  .screen { display: none; flex-direction: column; height: calc(812px - 56px); overflow: hidden; }
+  .screen.active { display: flex; }
+
+  /* === TASKS TODAY SCREEN === */
+  .screen-header {
+    padding: 20px 24px 12px;
+  }
+  .screen-header .greeting {
+    font-size: 13px;
+    color: var(--text3);
+    margin-bottom: 4px;
+    font-weight: 400;
+  }
+  .screen-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .screen-header .date-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 5px 12px;
+    background: var(--surface2);
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .date-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* Progress bar */
+  .progress-section {
+    padding: 0 24px 16px;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+  .progress-bar {
+    height: 4px;
+    background: var(--surface3);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 42%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 100px;
+  }
+
+  /* Quick add */
+  .quick-add {
+    margin: 0 24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .quick-add:hover { border-color: var(--accent); }
+  .quick-add .plus {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff; flex-shrink: 0;
+    line-height: 1;
+  }
+  .quick-add span { font-size: 14px; color: var(--text3); }
+
+  /* Section label */
+  .section-label {
+    padding: 0 24px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  /* Task list */
+  .task-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 24px;
+    scrollbar-width: none;
+  }
+  .task-list::-webkit-scrollbar { display: none; }
+
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .task-item:last-child { border-bottom: none; }
+
+  .task-check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--surface3);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .task-check.done {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .task-check.done::after {
+    content: '';
+    width: 10px; height: 7px;
+    border-left: 2px solid #0E0F14;
+    border-bottom: 2px solid #0E0F14;
+    transform: rotate(-45deg) translateY(-1px);
+    display: block;
+  }
+  .task-priority {
+    width: 3px;
+    height: 36px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .task-body { flex: 1; min-width: 0; }
+  .task-title {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .task-title.done {
+    text-decoration: line-through;
+    color: var(--text3);
+  }
+  .task-meta {
+    display: flex;
+    gap: 8px;
+    margin-top: 3px;
+    align-items: center;
+  }
+  .task-tag {
+    font-size: 11px;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .task-badge {
+    padding: 2px 7px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0 28px;
+    background: rgba(22,23,31,0.95);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 16px;
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+  .tab-item.active .tab-icon { color: var(--accent); }
+  .tab-item.active .tab-label { color: var(--accent); }
+  .tab-icon { font-size: 22px; color: var(--text3); line-height: 1; }
+  .tab-label { font-size: 10px; color: var(--text3); font-weight: 500; }
+
+  /* === FINANCE SCREEN === */
+  .finance-header {
+    padding: 20px 24px 0;
+  }
+  .finance-greeting {
+    font-size: 13px;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
+  .finance-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+
+  /* Balance card */
+  .balance-card {
+    margin: 0 24px 16px;
+    padding: 22px;
+    background: linear-gradient(135deg, #1a1f3a 0%, #16171F 60%, #1a1a2e 100%);
+    border-radius: 24px;
+    border: 1px solid rgba(108,142,255,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  .balance-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(108,142,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .balance-label { font-size: 12px; color: var(--text3); margin-bottom: 6px; }
+  .balance-amount {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+  .balance-amount span { font-size: 18px; color: var(--text2); margin-right: 4px; }
+  .balance-stats {
+    display: flex;
+    gap: 20px;
+  }
+  .balance-stat .stat-label {
+    font-size: 11px;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 3px;
+  }
+  .stat-arrow { font-size: 10px; }
+  .stat-up { color: var(--green); }
+  .stat-down { color: var(--red); }
+  .balance-stat .stat-val {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  /* Month selector */
+  .month-scroll {
+    display: flex;
+    gap: 8px;
+    padding: 0 24px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .month-scroll::-webkit-scrollbar { display: none; }
+  .month-pill {
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    background: var(--surface2);
+    flex-shrink: 0;
+  }
+  .month-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* Chart */
+  .chart-section {
+    padding: 0 24px 16px;
+  }
+  .chart-title {
+    font-size: 12px;
+    color: var(--text3);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 80px;
+  }
+  .bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+  .bar {
+    width: 100%;
+    border-radius: 6px 6px 0 0;
+    transition: opacity 0.2s;
+  }
+  .bar-label { font-size: 9px; color: var(--text3); }
+
+  /* Transactions */
+  .transactions-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 24px;
+    scrollbar-width: none;
+  }
+  .transactions-list::-webkit-scrollbar { display: none; }
+
+  .tx-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .tx-item:last-child { border-bottom: none; }
+  .tx-icon {
+    width: 40px; height: 40px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .tx-body { flex: 1; }
+  .tx-name { font-size: 14px; font-weight: 400; color: var(--text); margin-bottom: 2px; }
+  .tx-cat { font-size: 12px; color: var(--text3); }
+  .tx-amount { font-size: 15px; font-weight: 500; }
+  .tx-amount.income { color: var(--green); }
+  .tx-amount.expense { color: var(--text); }
+
+  /* Add button */
+  .fab {
+    position: absolute;
+    bottom: 88px;
+    right: 24px;
+    width: 52px; height: 52px;
+    background: var(--accent);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(108,142,255,0.4);
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  /* === ADD TASK SCREEN === */
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: var(--surface3);
+    border-radius: 2px;
+    margin: 12px auto 20px;
+  }
+  .modal-title {
+    padding: 0 24px 20px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    font-weight: 400;
+  }
+  .form-field {
+    margin: 0 24px 14px;
+  }
+  .field-label {
+    font-size: 11px;
+    color: var(--text3);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .field-input {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+  }
+  .field-input::placeholder { color: var(--text3); }
+  .field-input.focused { border-color: var(--accent); }
+
+  .priority-row {
+    display: flex;
+    gap: 8px;
+    margin: 0 24px 14px;
+  }
+  .priority-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .priority-btn .p-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .priority-btn .p-label { font-size: 11px; color: var(--text3); }
+  .priority-btn.selected-p { border-color: currentColor; }
+
+  .reminders-row {
+    display: flex;
+    gap: 8px;
+    margin: 0 24px 24px;
+    flex-wrap: wrap;
+  }
+  .reminder-chip {
+    padding: 7px 12px;
+    border-radius: 100px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .reminder-chip.active {
+    background: rgba(108,142,255,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .save-btn {
+    margin: 0 24px;
+    width: calc(100% - 48px);
+    padding: 16px;
+    background: var(--accent);
+    border: none;
+    border-radius: 16px;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(108,142,255,0.3);
+  }
+
+  /* === FINANCE DETAIL === */
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 0 24px 16px;
+  }
+  .cat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+  .cat-icon-wrap {
+    width: 48px; height: 48px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .cat-name { font-size: 10px; color: var(--text3); text-align: center; }
+  .cat-amount { font-size: 12px; font-weight: 600; color: var(--text); }
+
+  /* Donut chart */
+  .donut-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px 16px;
+  }
+  .donut-svg { flex-shrink: 0; }
+  .donut-legend { flex: 1; }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-text { flex: 1; font-size: 12px; color: var(--text2); }
+  .legend-pct { font-size: 12px; font-weight: 600; color: var(--text); }
+
+  /* Label */
+  .screen-label {
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--text3);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  /* Outer layout */
+  .screens-row {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .phone-container {
+    position: relative;
+    margin-bottom: 48px;
+  }
+
+  /* Mac mockup strip */
+  .mac-strip {
+    width: 100%;
+    max-width: 900px;
+    margin-top: 16px;
+    background: var(--surface);
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+  .mac-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .mac-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .mac-title {
+    flex: 1;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text3);
+    font-weight: 500;
+  }
+  .mac-content {
+    display: flex;
+    height: 560px;
+  }
+  .mac-sidebar {
+    width: 220px;
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    flex-shrink: 0;
+  }
+  .sidebar-section {
+    padding: 0 16px 16px;
+  }
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0 8px;
+    margin-bottom: 6px;
+  }
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text2);
+    transition: all 0.15s;
+    margin-bottom: 2px;
+  }
+  .sidebar-item:hover { background: var(--surface3); }
+  .sidebar-item.active { background: rgba(108,142,255,0.15); color: var(--accent); }
+  .sidebar-icon { font-size: 15px; width: 20px; text-align: center; }
+  .sidebar-badge {
+    margin-left: auto;
+    padding: 1px 7px;
+    background: var(--accent);
+    border-radius: 100px;
+    font-size: 10px;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .mac-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .mac-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mac-toolbar h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+  }
+  .mac-toolbar-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .mac-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .mac-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .mac-task-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface3) transparent;
+  }
+  .mac-task-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  .mac-task-row:hover { background: var(--surface2); }
+  .mac-task-check {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--surface3);
+    flex-shrink: 0;
+  }
+  .mac-task-check.done {
+    background: var(--green);
+    border-color: var(--green);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mac-task-check.done::after {
+    content: '';
+    width: 8px; height: 5px;
+    border-left: 1.5px solid #0E0F14;
+    border-bottom: 1.5px solid #0E0F14;
+    transform: rotate(-45deg) translateY(-1px);
+    display: block;
+  }
+  .mac-prio {
+    width: 3px; height: 28px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .mac-task-text { flex: 1; font-size: 13px; color: var(--text); }
+  .mac-task-text.done { text-decoration: line-through; color: var(--text3); }
+  .mac-task-date { font-size: 11px; color: var(--text3); }
+  .mac-task-tag {
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  /* Detail panel */
+  .mac-detail {
+    width: 280px;
+    border-left: 1px solid var(--border);
+    padding: 20px;
+    flex-shrink: 0;
+  }
+  .detail-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+  .detail-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row-icon { font-size: 15px; width: 20px; }
+  .detail-row-label { font-size: 12px; color: var(--text3); flex: 1; }
+  .detail-row-val { font-size: 12px; color: var(--text); font-weight: 500; }
+  .detail-notes {
+    margin-top: 14px;
+    padding: 12px;
+    background: var(--surface2);
+    border-radius: 12px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .color-bar { display: flex; gap: 4px; margin-top: 20px; }
+  .color-swatch {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>MyDay</h1>
+  <p>iOS + macOS · Design Concept</p>
+</div>
+
+<div class="screen-nav">
+  <button class="screen-btn active" onclick="showScreen('tasks')">📋 Задачи</button>
+  <button class="screen-btn" onclick="showScreen('finance')">💰 Финансы</button>
+  <button class="screen-btn" onclick="showScreen('add-task')">➕ Добавить задачу</button>
+  <button class="screen-btn" onclick="showScreen('finance-detail')">📊 Категории</button>
+  <button class="screen-btn mac-only" onclick="showMac()">🖥 Mac версия</button>
+</div>
+
+<!-- PHONES ROW -->
+<div id="phones-section">
+<div class="screens-row">
+
+  <!-- PHONE 1: TASKS -->
+  <div class="phone-container" id="phone-main">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">
+          <svg viewBox="0 0 16 16"><path d="M1 5h2v6H1zm4-2h2v8H5zm4-2h2v10H9zm4 4h2v6h-2z"/></svg>
+          <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zM2 8a6 6 0 1112 0A6 6 0 012 8z"/><path d="M8 4v4l3 3-1 1-3.5-3.5V4z"/></svg>
+        </div>
+      </div>
+      <div class="dynamic-island"></div>
+
+      <!-- TASKS SCREEN -->
+      <div class="screen active" id="screen-tasks">
+        <div class="screen-header">
+          <div class="greeting">Среда, 15 апреля</div>
+          <h2>Сегодня</h2>
+          <div class="date-tag">
+            <div class="dot"></div>
+            3 из 7 задач выполнено
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-label">
+            <span>Прогресс дня</span>
+            <span>42%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+        </div>
+
+        <div class="quick-add">
+          <div class="plus">+</div>
+          <span>Добавить задачу...</span>
+        </div>
+
+        <div class="section-label">В процессе</div>
+
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-check"></div>
+            <div class="task-priority" style="background:#6C8EFF"></div>
+            <div class="task-body">
+              <div class="task-title">Созвон с командой по проекту</div>
+              <div class="task-meta">
+                <span class="task-tag">🕐 10:00</span>
+                <span class="task-badge" style="background:rgba(108,142,255,0.15);color:#6C8EFF">Работа</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-item">
+            <div class="task-check"></div>
+            <div class="task-priority" style="background:#F87171"></div>
+            <div class="task-body">
+              <div class="task-title">Внести расходы за неделю</div>
+              <div class="task-meta">
+                <span class="task-tag">⚡ Высокий</span>
+                <span class="task-badge" style="background:rgba(248,113,113,0.15);color:#F87171">Финансы</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-item">
+            <div class="task-check"></div>
+            <div class="task-priority" style="background:#FBBF24"></div>
+            <div class="task-body">
+              <div class="task-title">Закончить дизайн лендинга</div>
+              <div class="task-meta">
+                <span class="task-tag">🕔 до 18:00</span>
+                <span class="task-badge" style="background:rgba(251,191,36,0.15);color:#FBBF24">Дизайн</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-item">
+            <div class="task-check"></div>
+            <div class="task-priority" style="background:#34D399"></div>
+            <div class="task-body">
+              <div class="task-title">Пробежка 5 км</div>
+              <div class="task-meta">
+                <span class="task-tag">🌅 Утро</span>
+                <span class="task-badge" style="background:rgba(52,211,153,0.15);color:#34D399">Здоровье</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label" style="padding-top:12px">Выполнено</div>
+
+          <div class="task-item" style="opacity:0.6">
+            <div class="task-check done"></div>
+            <div class="task-priority" style="background:var(--surface3)"></div>
+            <div class="task-body">
+              <div class="task-title done">Прочитать статьи по Swift</div>
+              <div class="task-meta"><span class="task-tag">✓ 08:30</span></div>
+            </div>
+          </div>
+
+          <div class="task-item" style="opacity:0.6">
+            <div class="task-check done"></div>
+            <div class="task-priority" style="background:var(--surface3)"></div>
+            <div class="task-body">
+              <div class="task-title done">Заказать кофе в офис</div>
+              <div class="task-meta"><span class="task-tag">✓ 09:15</span></div>
+            </div>
+          </div>
+
+          <div class="task-item" style="opacity:0.6">
+            <div class="task-check done"></div>
+            <div class="task-priority" style="background:var(--surface3)"></div>
+            <div class="task-body">
+              <div class="task-title done">Ответить на письма</div>
+              <div class="task-meta"><span class="task-tag">✓ 09:45</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item active">
+            <div class="tab-icon">📋</div>
+            <div class="tab-label">Задачи</div>
+          </div>
+          <div class="tab-item">
+            <div class="tab-icon">💰</div>
+            <div class="tab-label">Финансы</div>
+          </div>
+          <div class="tab-item">
+            <div class="tab-icon">⚙️</div>
+            <div class="tab-label">Настройки</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINANCE SCREEN -->
+      <div class="screen" id="screen-finance">
+        <div class="finance-header">
+          <div class="finance-greeting">Апрель 2025</div>
+          <div class="finance-title">Финансы</div>
+        </div>
+
+        <div class="balance-card">
+          <div class="balance-label">Баланс месяца</div>
+          <div class="balance-amount"><span>₸</span>487 200</div>
+          <div class="balance-stats">
+            <div class="balance-stat">
+              <div class="stat-label"><span class="stat-arrow stat-up">↑</span> Доходы</div>
+              <div class="stat-val" style="color:var(--green)">₸ 850 000</div>
+            </div>
+            <div class="balance-stat">
+              <div class="stat-label"><span class="stat-arrow stat-down">↓</span> Расходы</div>
+              <div class="stat-val" style="color:var(--red)">₸ 362 800</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="month-scroll">
+          <div class="month-pill">Янв</div>
+          <div class="month-pill">Фев</div>
+          <div class="month-pill">Мар</div>
+          <div class="month-pill active">Апр</div>
+          <div class="month-pill">Май</div>
+          <div class="month-pill">Июн</div>
+        </div>
+
+        <div class="chart-section">
+          <div class="chart-title">Расходы по неделям</div>
+          <div class="bar-chart">
+            <div class="bar-wrap">
+              <div class="bar" style="height:45px;background:rgba(108,142,255,0.4)"></div>
+              <div class="bar-label">Нед 1</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:65px;background:rgba(108,142,255,0.5)"></div>
+              <div class="bar-label">Нед 2</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:35px;background:rgba(108,142,255,0.35)"></div>
+              <div class="bar-label">Нед 3</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:80px;background:var(--accent)"></div>
+              <div class="bar-label" style="color:var(--accent)">Нед 4</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">Последние транзакции</div>
+
+        <div class="transactions-list">
+          <div class="tx-item">
+            <div class="tx-icon" style="background:rgba(52,211,153,0.15)">💼</div>
+            <div class="tx-body">
+              <div class="tx-name">Зарплата</div>
+              <div class="tx-cat">Доход · сегодня</div>
+            </div>
+            <div class="tx-amount income">+₸ 650 000</div>
+          </div>
+          <div class="tx-item">
+            <div class="tx-icon" style="background:rgba(251,191,36,0.15)">🛒</div>
+            <div class="tx-body">
+              <div class="tx-name">Продукты · Magnum</div>
+              <div class="tx-cat">Еда · вчера</div>
+            </div>
+            <div class="tx-amount expense">−₸ 18 400</div>
+          </div>
+          <div class="tx-item">
+            <div class="tx-icon" style="background:rgba(167,139,250,0.15)">🚗</div>
+            <div class="tx-body">
+              <div class="tx-name">Яндекс Такси</div>
+              <div class="tx-cat">Транспорт · вчера</div>
+            </div>
+            <div class="tx-amount expense">−₸ 2 800</div>
+          </div>
+          <div class="tx-item">
+            <div class="tx-icon" style="background:rgba(248,113,113,0.15)">☕</div>
+            <div class="tx-body">
+              <div class="tx-name">Кофейня</div>
+              <div class="tx-cat">Еда · 13 апр</div>
+            </div>
+            <div class="tx-amount expense">−₸ 3 500</div>
+          </div>
+        </div>
+
+        <div class="fab">+</div>
+
+        <div class="tab-bar">
+          <div class="tab-item">
+            <div class="tab-icon">📋</div>
+            <div class="tab-label">Задачи</div>
+          </div>
+          <div class="tab-item active">
+            <div class="tab-icon">💰</div>
+            <div class="tab-label">Финансы</div>
+          </div>
+          <div class="tab-item">
+            <div class="tab-icon">⚙️</div>
+            <div class="tab-label">Настройки</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD TASK SCREEN -->
+      <div class="screen" id="screen-add-task" style="background:var(--surface)">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Новая задача</div>
+
+        <div class="form-field">
+          <div class="field-label">Название</div>
+          <input class="field-input focused" placeholder="Что нужно сделать?" readonly>
+        </div>
+
+        <div class="form-field">
+          <div class="field-label">Заметки</div>
+          <input class="field-input" placeholder="Добавить детали..." readonly>
+        </div>
+
+        <div class="form-field">
+          <div class="field-label">Приоритет</div>
+        </div>
+        <div class="priority-row">
+          <div class="priority-btn" style="color:var(--green)">
+            <div class="p-dot" style="background:var(--green)"></div>
+            <div class="p-label">Низкий</div>
+          </div>
+          <div class="priority-btn selected-p" style="color:var(--yellow);border-color:var(--yellow);background:rgba(251,191,36,0.08)">
+            <div class="p-dot" style="background:var(--yellow)"></div>
+            <div class="p-label" style="color:var(--yellow)">Средний</div>
+          </div>
+          <div class="priority-btn" style="color:var(--red)">
+            <div class="p-dot" style="background:var(--red)"></div>
+            <div class="p-label">Высокий</div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <div class="field-label">Напоминание</div>
+        </div>
+        <div class="reminders-row">
+          <div class="reminder-chip active">🕐 В 10:00</div>
+          <div class="reminder-chip">30 мин</div>
+          <div class="reminder-chip">1 час</div>
+          <div class="reminder-chip">Своё время</div>
+        </div>
+
+        <div class="form-field">
+          <div class="field-label">Тег</div>
+        </div>
+        <div class="reminders-row">
+          <div class="reminder-chip active" style="background:rgba(108,142,255,0.15);border-color:var(--accent);color:var(--accent)">💼 Работа</div>
+          <div class="reminder-chip">🏃 Здоровье</div>
+          <div class="reminder-chip">💰 Финансы</div>
+          <div class="reminder-chip">+ Новый</div>
+        </div>
+
+        <div style="flex:1"></div>
+        <button class="save-btn" style="margin-bottom:16px">Сохранить задачу</button>
+
+        <div class="tab-bar" style="padding-top:8px">
+          <div class="tab-item active">
+            <div class="tab-icon">📋</div>
+            <div class="tab-label">Задачи</div>
+          </div>
+          <div class="tab-item">
+            <div class="tab-icon">💰</div>
+            <div class="tab-label">Финансы</div>
+          </div>
+          <div class="tab-item">
+            <div class="tab-icon">⚙️</div>
+            <div class="tab-label">Настройки</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINANCE DETAIL -->
+      <div class="screen" id="screen-finance-detail">
+        <div class="finance-header">
+          <div class="finance-greeting">Апрель · Расходы</div>
+          <div class="finance-title">По категориям</div>
+        </div>
+
+        <div class="donut-wrap">
+          <svg class="donut-svg" width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="46" fill="none" stroke="var(--surface2)" stroke-width="16"/>
+            <circle cx="60" cy="60" r="46" fill="none" stroke="#6C8EFF" stroke-width="16"
+              stroke-dasharray="289" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="46" fill="none" stroke="#FBBF24" stroke-width="16"
+              stroke-dasharray="289" stroke-dashoffset="202" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="46" fill="none" stroke="#F87171" stroke-width="16"
+              stroke-dasharray="289" stroke-dashoffset="231" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="46" fill="none" stroke="#34D399" stroke-width="16"
+              stroke-dasharray="289" stroke-dashoffset="260" transform="rotate(-90 60 60)"/>
+            <text x="60" y="56" text-anchor="middle" fill="white" font-size="13" font-family="DM Serif Display">₸ 362</text>
+            <text x="60" y="70" text-anchor="middle" fill="#9395A5" font-size="9">тыс.</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#6C8EFF"></div>
+              <div class="legend-text">Еда и кафе</div>
+              <div class="legend-pct">38%</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#FBBF24"></div>
+              <div class="legend-text">Продукты</div>
+              <div class="legend-pct">20%</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#F87171"></div>
+              <div class="legend-text">Транспорт</div>
+              <div class="legend-pct">10%</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#34D399"></div>
+              <div class="legend-text">Здоровье</div>
+              <div class="legend-pct">8%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">Топ категории</div>
+        <div class="categories-grid">
+          <div class="cat-item">
+            <div class="cat-icon-wrap" style="background:rgba(108,142,255,0.15)">🍕</div>
+            <div class="cat-name">Еда</div>
+            <div class="cat-amount">₸138к</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon-wrap" style="background:rgba(251,191,36,0.15)">🛒</div>
+            <div class="cat-name">Продукты</div>
+            <div class="cat-amount">₸72к</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon-wrap" style="background:rgba(167,139,250,0.15)">🚗</div>
+            <div class="cat-name">Транспорт</div>
+            <div class="cat-amount">₸36к</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon-wrap" style="background:rgba(52,211,153,0.15)">💊</div>
+            <div class="cat-name">Здоровье</div>
+            <div class="cat-amount">₸29к</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon-wrap" style="background:rgba(45,212,191,0.15)">🎮</div>
+            <div class="cat-name">Развлеч.</div>
+            <div class="cat-amount">₸22к</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon-wrap" style="background:rgba(244,114,182,0.15)">📱</div>
+            <div class="cat-name">Подписки</div>
+            <div class="cat-amount">₸18к</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon-wrap" style="background:rgba(248,113,113,0.15)">🏠</div>
+            <div class="cat-name">Жильё</div>
+            <div class="cat-amount">₸0</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon-wrap" style="background:var(--surface2)">＋</div>
+            <div class="cat-name">Добавить</div>
+            <div class="cat-amount" style="color:var(--text3)">–</div>
+          </div>
+        </div>
+
+        <div class="color-bar">
+          <div class="color-swatch" style="background:#6C8EFF;flex:3.8"></div>
+          <div class="color-swatch" style="background:#FBBF24;flex:2"></div>
+          <div class="color-swatch" style="background:#A78BFA;flex:1"></div>
+          <div class="color-swatch" style="background:#34D399;flex:0.8"></div>
+          <div class="color-swatch" style="background:#2DD4BF;flex:0.6"></div>
+          <div class="color-swatch" style="background:#F472B6;flex:0.5"></div>
+        </div>
+
+        <div class="tab-bar" style="margin-top:auto">
+          <div class="tab-item">
+            <div class="tab-icon">📋</div>
+            <div class="tab-label">Задачи</div>
+          </div>
+          <div class="tab-item active">
+            <div class="tab-icon">💰</div>
+            <div class="tab-label">Финансы</div>
+          </div>
+          <div class="tab-item">
+            <div class="tab-icon">⚙️</div>
+            <div class="tab-label">Настройки</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label" id="phone-label">Задачи — Сегодня</div>
+  </div>
+
+</div>
+</div>
+
+<!-- MAC SECTION -->
+<div id="mac-section" style="display:none;width:100%;max-width:900px">
+  <div class="mac-strip">
+    <div class="mac-titlebar">
+      <div class="mac-dot" style="background:#FF5F57"></div>
+      <div class="mac-dot" style="background:#FEBC2E"></div>
+      <div class="mac-dot" style="background:#28C840"></div>
+      <div class="mac-title">MyDay — Сегодня</div>
+    </div>
+    <div class="mac-content">
+      <!-- Sidebar -->
+      <div class="mac-sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">Задачи</div>
+          <div class="sidebar-item active">
+            <span class="sidebar-icon">☀️</span> Сегодня
+            <span class="sidebar-badge">4</span>
+          </div>
+          <div class="sidebar-item">
+            <span class="sidebar-icon">📅</span> Запланировано
+          </div>
+          <div class="sidebar-item">
+            <span class="sidebar-icon">📥</span> Входящие
+          </div>
+          <div class="sidebar-item">
+            <span class="sidebar-icon">✅</span> Выполнено
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">Теги</div>
+          <div class="sidebar-item">
+            <span class="sidebar-icon">💼</span> Работа
+          </div>
+          <div class="sidebar-item">
+            <span class="sidebar-icon">🏃</span> Здоровье
+          </div>
+          <div class="sidebar-item">
+            <span class="sidebar-icon">💰</span> Финансы
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">Финансы</div>
+          <div class="sidebar-item">
+            <span class="sidebar-icon">📊</span> Дашборд
+          </div>
+          <div class="sidebar-item">
+            <span class="sidebar-icon">📋</span> Транзакции
+          </div>
+          <div class="sidebar-item">
+            <span class="sidebar-icon">🗂</span> Категории
+          </div>
+        </div>
+      </div>
+
+      <!-- Main area -->
+      <div class="mac-main">
+        <div class="mac-toolbar">
+          <h3>Сегодня — 15 апр</h3>
+          <div class="mac-toolbar-actions">
+            <button class="mac-btn">Фильтр</button>
+            <button class="mac-btn">Сортировка</button>
+            <button class="mac-btn primary">+ Задача</button>
+          </div>
+        </div>
+
+        <div class="mac-task-grid">
+          <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">В процессе · 4 задачи</div>
+
+          <div class="mac-task-row">
+            <div class="mac-task-check"></div>
+            <div class="mac-prio" style="background:#6C8EFF"></div>
+            <div class="mac-task-text">Созвон с командой по проекту</div>
+            <span class="mac-task-tag" style="background:rgba(108,142,255,0.15);color:#6C8EFF">Работа</span>
+            <div class="mac-task-date">10:00</div>
+          </div>
+
+          <div class="mac-task-row" style="background:var(--surface2)">
+            <div class="mac-task-check"></div>
+            <div class="mac-prio" style="background:#F87171"></div>
+            <div class="mac-task-text">Внести расходы за неделю</div>
+            <span class="mac-task-tag" style="background:rgba(248,113,113,0.15);color:#F87171">Финансы</span>
+            <div class="mac-task-date">—</div>
+          </div>
+
+          <div class="mac-task-row">
+            <div class="mac-task-check"></div>
+            <div class="mac-prio" style="background:#FBBF24"></div>
+            <div class="mac-task-text">Закончить дизайн лендинга</div>
+            <span class="mac-task-tag" style="background:rgba(251,191,36,0.15);color:#FBBF24">Дизайн</span>
+            <div class="mac-task-date">до 18:00</div>
+          </div>
+
+          <div class="mac-task-row">
+            <div class="mac-task-check"></div>
+            <div class="mac-prio" style="background:#34D399"></div>
+            <div class="mac-task-text">Пробежка 5 км</div>
+            <span class="mac-task-tag" style="background:rgba(52,211,153,0.15);color:#34D399">Здоровье</span>
+            <div class="mac-task-date">—</div>
+          </div>
+
+          <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin:16px 0 8px">Выполнено · 3 задачи</div>
+
+          <div class="mac-task-row" style="opacity:0.5">
+            <div class="mac-task-check done"></div>
+            <div class="mac-prio" style="background:var(--surface3)"></div>
+            <div class="mac-task-text done">Прочитать статьи по Swift</div>
+            <span class="mac-task-tag" style="background:var(--surface3);color:var(--text3)">Учёба</span>
+            <div class="mac-task-date" style="color:var(--text3)">08:30</div>
+          </div>
+
+          <div class="mac-task-row" style="opacity:0.5">
+            <div class="mac-task-check done"></div>
+            <div class="mac-prio" style="background:var(--surface3)"></div>
+            <div class="mac-task-text done">Заказать кофе в офис</div>
+            <span class="mac-task-tag" style="background:var(--surface3);color:var(--text3)">Разное</span>
+            <div class="mac-task-date" style="color:var(--text3)">09:15</div>
+          </div>
+
+          <div class="mac-task-row" style="opacity:0.5">
+            <div class="mac-task-check done"></div>
+            <div class="mac-prio" style="background:var(--surface3)"></div>
+            <div class="mac-task-text done">Ответить на письма</div>
+            <span class="mac-task-tag" style="background:var(--surface3);color:var(--text3)">Работа</span>
+            <div class="mac-task-date" style="color:var(--text3)">09:45</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail panel -->
+      <div class="mac-detail">
+        <div class="detail-title">Внести расходы за неделю</div>
+        <div class="detail-row">
+          <span class="detail-row-icon">⚡</span>
+          <span class="detail-row-label">Приоритет</span>
+          <span class="detail-row-val" style="color:#F87171">Высокий</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-row-icon">📅</span>
+          <span class="detail-row-label">Срок</span>
+          <span class="detail-row-val">Сегодня</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-row-icon">🔔</span>
+          <span class="detail-row-label">Напоминание</span>
+          <span class="detail-row-val">—</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-row-icon">🏷</span>
+          <span class="detail-row-label">Тег</span>
+          <span class="detail-row-val" style="color:#F87171">Финансы</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-row-icon">☁️</span>
+          <span class="detail-row-label">Синхронизация</span>
+          <span class="detail-row-val" style="color:var(--green)">iCloud ✓</span>
+        </div>
+        <div class="detail-notes">
+          Внести все чеки за еду, такси и кофейни. Обновить категории в приложении.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const screenLabels = {
+    'tasks': 'Задачи — Сегодня',
+    'finance': 'Финансы — Дашборд',
+    'add-task': 'Задачи — Добавить',
+    'finance-detail': 'Финансы — Категории'
+  };
+
+  function showScreen(name) {
+    // Hide mac
+    document.getElementById('mac-section').style.display = 'none';
+    document.getElementById('phones-section').style.display = 'block';
+
+    // Update buttons
+    document.querySelectorAll('.screen-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    // Hide all screens
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+    // Show target
+    const target = document.getElementById('screen-' + name);
+    if (target) target.classList.add('active');
+
+    // Update label
+    document.getElementById('phone-label').textContent = screenLabels[name] || '';
+  }
+
+  function showMac() {
+    document.getElementById('phones-section').style.display = 'none';
+    document.getElementById('mac-section').style.display = 'block';
+    document.querySelectorAll('.screen-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+</script>
+</body>
+</html>
