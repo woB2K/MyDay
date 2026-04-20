@@ -14,7 +14,7 @@ struct TaskRowView: View {
     var body: some View {
         HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 2)
-                .fill(priorityColor(task.priority))
+                .fill(task.priority.color)
                 .frame(width: 5)
 
             Button(action: onToggle) {
@@ -36,9 +36,9 @@ struct TaskRowView: View {
                             .font(.caption)
                             .foregroundColor(Color.appText2)
                     }
-                    Text(priorityLabel(task.priority))
+                    Text(task.priority.label)
                         .font(.caption)
-                        .foregroundColor(priorityColor(task.priority))
+                        .foregroundColor(task.priority.color)
                 }
             }
 
@@ -51,22 +51,6 @@ struct TaskRowView: View {
                 .fill(Color.appSurface3)
                 .frame(height: 2)
                 .padding(.horizontal, 16)
-        }
-    }
-
-    private func priorityColor(_ priority: TaskPriority) -> Color {
-        switch priority {
-        case .high:   return Color.appRed
-        case .medium: return Color.appYellow
-        case .low:    return Color.appGreen
-        }
-    }
-
-    private func priorityLabel(_ priority: TaskPriority) -> String {
-        switch priority {
-        case .high:   return "Высокий"
-        case .medium: return "Средний"
-        case .low:    return "Низкий"
         }
     }
 }

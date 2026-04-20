@@ -19,7 +19,10 @@ final class Task {
     var priority: TaskPriority = TaskPriority.low
     var dueDate: Date? = nil
     var reminderDate: Date? = nil
-    var tags: [String] = []
+    
+    @Relationship(deleteRule: .nullify, inverse: \TaskTag.tasks)
+    var tags: [TaskTag] = []
+    
     var completedAt: Date? = nil
     var isRecurring: Bool = false
     var recurrenceRule: String? = nil

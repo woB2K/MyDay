@@ -14,7 +14,7 @@ struct MyDayApp: App {
     let taskViewModel: TaskViewModel
                                                                                                                                            
     init() {
-        let schema = Schema([Category.self, Task.self, Transaction.self])
+        let schema = Schema([Category.self, Task.self, Transaction.self, TaskTag.self])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         let container = try! ModelContainer(for: schema, configurations: [config])
         self.sharedModelContainer = container
@@ -23,8 +23,8 @@ struct MyDayApp: App {
  
     var body: some Scene {
         WindowGroup {
-            TodayView()
-                .environment(taskViewModel)  // ← кладём в окружение
+            ContentView()
+                .environment(taskViewModel)
         }
         .modelContainer(sharedModelContainer)
     }
